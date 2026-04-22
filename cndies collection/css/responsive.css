@@ -1,0 +1,178 @@
+@media (max-width: 1180px) {
+  .hero-grid,
+  .featured-viewer,
+  .contact-preview-grid,
+  .page-hero-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trust-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .filters-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cta-panel-actions {
+    width: 100%;
+    justify-items: start;
+  }
+}
+
+@media (max-width: 920px) {
+  .site-header {
+    padding-top: 0.75rem;
+  }
+
+  .nav-shell {
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .site-nav,
+  .nav-social {
+    display: none;
+  }
+
+  .nav-extras {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  body.menu-open .site-nav,
+  body.menu-open .nav-social {
+    display: flex;
+  }
+
+  .site-nav {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  .nav-social {
+    width: 100%;
+    padding-top: 0.25rem;
+  }
+
+  .hero,
+  .page-hero {
+    padding-top: 2rem;
+  }
+
+  .viewer-meta,
+  .story-grid,
+  .contact-cards,
+  .info-grid,
+  .contact-page-grid,
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .section-header-wide,
+  .featured-showcase-footer,
+  .footer-shell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-social,
+  .social-list--footer {
+    justify-items: start;
+    justify-content: flex-start;
+  }
+
+  .phone-stage {
+    min-height: 28rem;
+  }
+
+  .phone-stage img {
+    max-height: 24rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 3.15rem 0;
+  }
+
+  .container {
+    width: min(calc(100% - 1.2rem), var(--container));
+  }
+
+  .nav-shell,
+  .featured-viewer,
+  .page-hero-card,
+  .payment-card,
+  .cta-panel,
+  .connect-panel-wide {
+    padding: 1.2rem;
+  }
+
+  .hero h1,
+  .page-hero h1 {
+    max-width: none;
+  }
+
+  .hero-actions,
+  .viewer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn,
+  .viewer-model-button,
+  .side-control,
+  .filter-button,
+  .social-link {
+    width: 100%;
+  }
+
+  .viewer-models,
+  .viewer-side-controls,
+  .filter-buttons,
+  .hero-pills,
+  .nav-social,
+  .social-list {
+    flex-direction: column;
+  }
+
+  .products-grid,
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .phone-stage {
+    min-height: 24rem;
+  }
+
+  .phone-stage img {
+    max-height: 20rem;
+  }
+}
