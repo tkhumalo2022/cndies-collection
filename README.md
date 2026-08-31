@@ -2,6 +2,8 @@
 
 A responsive multi-page e-commerce storefront built for a consumer electronics retail concept.
 
+Live site: https://cndies-collection-9brh.vercel.app
+
 ## Overview
 
 This project explores the practical frontend work behind an online retail experience: product presentation, navigation, responsive layouts, customer-facing information and reusable visual assets.
@@ -50,4 +52,4 @@ This is an earlier frontend project and intentionally remains simpler than my ne
 
 ## Status
 
-Portfolio project / maintained as a record of earlier frontend development work.
+Portfolio project maintained as a record of earlier frontend development work.
