@@ -1,17 +1,38 @@
 (function () {
-  function ensurePolishStyles() {
-    if (document.querySelector('link[data-cndies-polish]')) {
+  function ensureStylesheet(selector, href, attributeName) {
+    if (document.querySelector(selector)) {
       return;
     }
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "css/polish.css?v=20260910";
-    link.setAttribute("data-cndies-polish", "true");
+    link.href = href;
+    link.setAttribute(attributeName, "true");
     document.head.appendChild(link);
   }
 
+  function ensurePolishStyles() {
+    ensureStylesheet('link[data-cndies-polish]', "css/polish.css?v=20260910", "data-cndies-polish");
+  }
+
+  function ensureAppleEnhanceStyles() {
+    ensureStylesheet('link[data-cndies-apple-enhance]', "css/apple-enhance.css?v=20260910b", "data-cndies-apple-enhance");
+  }
+
+  function ensureChatbotScript() {
+    if (document.querySelector('script[data-cndies-chatbot]')) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "js/chatbot.js?v=20260910b";
+    script.defer = true;
+    script.setAttribute("data-cndies-chatbot", "true");
+    document.body.appendChild(script);
+  }
+
   ensurePolishStyles();
+  ensureAppleEnhanceStyles();
 
   const site = window.CndiesSite = window.CndiesSite || {};
 
@@ -146,8 +167,49 @@
     syncHeaderState();
   }
 
+  function setupScrollReveal() {
+    if (!window.IntersectionObserver || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const targets = document.querySelectorAll("main > .section:not(.hero), .page-hero-card, .contact-page-grid, .story-grid, .payment-grid");
+    if (!targets.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) {
+          return;
+        }
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
+
+    targets.forEach(function (target) {
+      target.classList.add("reveal-ready");
+      observer.observe(target);
+    });
+  }
+
+  function setupPaymentSafety() {
+    document.querySelectorAll(".info-item").forEach(function (item) {
+      const title = item.querySelector("strong");
+      const detail = item.querySelector("span");
+      if (!title || !detail) {
+        return;
+      }
+
+      if (title.textContent.trim().toLowerCase().indexOf("capitec") !== -1) {
+        title.textContent = "Secure Payment";
+        detail.textContent = "Confirm banking details on WhatsApp before paying";
+      }
+    });
+  }
+
   function setupStorefrontPolish() {
-    document.body.classList.add("site-polished");
+    document.body.classList.add("site-polished", "apple-inspired");
 
     const searchInput = document.getElementById("searchInput");
     const sortSelect = document.getElementById("sortSelect");
@@ -181,6 +243,9 @@
     setupMobileNav();
     setupSmoothAnchors();
     setupNavbarScroll();
+    setupPaymentSafety();
     setupStorefrontPolish();
+    setupScrollReveal();
+    ensureChatbotScript();
   });
 }());
