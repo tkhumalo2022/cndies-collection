@@ -96,6 +96,10 @@
       return;
     }
 
+    if (toggle.querySelectorAll("span").length === 2) {
+      toggle.appendChild(document.createElement("span"));
+    }
+
     toggle.addEventListener("click", function () {
       const isOpen = document.body.classList.toggle("menu-open");
       toggle.setAttribute("aria-expanded", String(isOpen));
