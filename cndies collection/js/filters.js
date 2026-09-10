@@ -12,9 +12,22 @@
 
     const site = window.CndiesSite;
     const allProducts = window.CndiesProducts.slice();
+    const compactQuery = window.matchMedia("(max-width: 720px)");
+    const MOBILE_BATCH_SIZE = 8;
     let activeCondition = "All";
     let activeSort = sortSelect.value || "low-high";
     let activeSearch = "";
+    let visibleLimit = compactQuery.matches ? MOBILE_BATCH_SIZE : allProducts.length;
+
+    let loadMoreButton = document.getElementById("loadMoreProducts");
+    if (!loadMoreButton) {
+      loadMoreButton = document.createElement("button");
+      loadMoreButton.id = "loadMoreProducts";
+      loadMoreButton.className = "load-more-products";
+      loadMoreButton.type = "button";
+      loadMoreButton.hidden = true;
+      grid.insertAdjacentElement("afterend", loadMoreButton);
+    }
 
     function cardMarkup(product) {
       const badgeClass = product.condition === "Brand New" ? "is-brand-new" : "is-pre-owned";
@@ -55,11 +68,22 @@
     }
 
     function hydrateImages() {
-      grid.querySelectorAll(".product-image").forEach(function (img) {
-        const slug = img.getAttribute("data-slug");
-        const side = img.getAttribute("data-side");
-        const name = img.getAttribute("data-name");
-        site.loadImage(img, site.phoneAssetCandidates(slug, side), name, side);
+      const cards = Array.prototype.slice.call(grid.querySelectorAll(".product-card"));
+      cards.forEach(function (card, cardIndex) {
+        card.querySelectorAll(".product-image").forEach(function (img) {
+          const slug = img.getAttribute("data-slug");
+          const side = img.getAttribute("data-side");
+          const name = img.getAttribute("data-name");
+          const eagerFront = side === "front" && cardIndex < (compactQuery.matches ? 2 : 4);
+
+          site.loadImage(
+            img,
+            site.phoneAssetCandidates(slug, side),
+            name,
+            side,
+            { eager: eagerFront }
+          );
+        });
       });
     }
 
@@ -74,18 +98,36 @@
       });
     }
 
+    function syncLoadMore(filteredCount, renderedCount) {
+      const remaining = Math.max(0, filteredCount - renderedCount);
+      const shouldShow = compactQuery.matches && remaining > 0;
+      loadMoreButton.hidden = !shouldShow;
+      if (shouldShow) {
+        const nextCount = Math.min(MOBILE_BATCH_SIZE, remaining);
+        loadMoreButton.textContent = "Show " + nextCount + " more iPhones";
+        loadMoreButton.setAttribute("aria-label", "Show " + nextCount + " more iPhones");
+      }
+    }
+
     function paint() {
       const filtered = getFilteredProducts();
 
       if (!filtered.length) {
         grid.innerHTML = "";
         emptyState.classList.remove("hidden");
+        loadMoreButton.hidden = true;
         return;
       }
 
       emptyState.classList.add("hidden");
-      grid.innerHTML = filtered.map(cardMarkup).join("");
+      const renderCount = compactQuery.matches ? Math.min(visibleLimit, filtered.length) : filtered.length;
+      grid.innerHTML = filtered.slice(0, renderCount).map(cardMarkup).join("");
       hydrateImages();
+      syncLoadMore(filtered.length, renderCount);
+    }
+
+    function resetMobileLimit() {
+      visibleLimit = compactQuery.matches ? MOBILE_BATCH_SIZE : allProducts.length;
     }
 
     filterContainer.querySelectorAll("[data-condition]").forEach(function (button) {
@@ -94,19 +136,34 @@
         filterContainer.querySelectorAll("[data-condition]").forEach(function (item) {
           item.classList.toggle("active", item === button);
         });
+        resetMobileLimit();
         paint();
       });
     });
 
     searchInput.addEventListener("input", function () {
       activeSearch = searchInput.value || "";
+      resetMobileLimit();
       paint();
     });
 
     sortSelect.addEventListener("change", function () {
       activeSort = sortSelect.value || "low-high";
+      resetMobileLimit();
       paint();
     });
+
+    loadMoreButton.addEventListener("click", function () {
+      visibleLimit += MOBILE_BATCH_SIZE;
+      paint();
+    });
+
+    if (typeof compactQuery.addEventListener === "function") {
+      compactQuery.addEventListener("change", function () {
+        resetMobileLimit();
+        paint();
+      });
+    }
 
     paint();
   }
