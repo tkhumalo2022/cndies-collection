@@ -20,7 +20,7 @@
   }
 
   function ensureDeviceHotfixStyles() {
-    ensureStylesheet('link[data-cndies-device-hotfix]', "css/device-hotfix.css?v=20260910c", "data-cndies-device-hotfix");
+    ensureStylesheet('link[data-cndies-device-hotfix]', "css/device-hotfix.css?v=20260910e", "data-cndies-device-hotfix");
   }
 
   function ensureChatbotScript() {
@@ -33,6 +33,19 @@
     script.defer = true;
     script.setAttribute("data-cndies-chatbot", "true");
     document.body.appendChild(script);
+  }
+
+  function scheduleChatbotScript() {
+    const load = function () {
+      ensureChatbotScript();
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(load, { timeout: 2200 });
+      return;
+    }
+
+    window.setTimeout(load, 1200);
   }
 
   ensurePolishStyles();
@@ -68,28 +81,38 @@
       "<svg xmlns='http://www.w3.org/2000/svg' width='520' height='760' viewBox='0 0 520 760'>",
       "<defs>",
       "<linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>",
-      "<stop stop-color='#f2dfad' offset='0'/>",
-      "<stop stop-color='#a98340' offset='1'/>",
+      "<stop stop-color='#ffc1a3' offset='0'/>",
+      "<stop stop-color='#8fb59a' offset='1'/>",
       "</linearGradient>",
       "</defs>",
-      "<rect width='520' height='760' rx='68' fill='#111111'/>",
+      "<rect width='520' height='760' rx='68' fill='#101714'/>",
       "<rect x='22' y='22' width='476' height='716' rx='52' fill='url(#g)' opacity='0.10'/>",
-      "<rect x='78' y='78' width='364' height='604' rx='44' fill='#1b1916' stroke='rgba(226,198,139,0.30)' stroke-width='2'/>",
-      "<text x='260' y='340' text-anchor='middle' fill='#f8f5ee' font-size='34' font-family='Arial, sans-serif' font-weight='700'>" + safeLabel + "</text>",
-      "<text x='260' y='386' text-anchor='middle' fill='#9c9487' font-size='24' font-family='Arial, sans-serif'>Local " + safeSide + " image unavailable</text>",
+      "<rect x='78' y='78' width='364' height='604' rx='44' fill='#1b2820' stroke='rgba(167,190,172,0.34)' stroke-width='2'/>",
+      "<text x='260' y='340' text-anchor='middle' fill='#f7f4ed' font-size='34' font-family='Arial, sans-serif' font-weight='700'>" + safeLabel + "</text>",
+      "<text x='260' y='386' text-anchor='middle' fill='#9eaaa0' font-size='24' font-family='Arial, sans-serif'>Local " + safeSide + " image unavailable</text>",
       "</svg>"
     ].join("");
 
     return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
   };
 
-  site.loadImage = function loadImage(img, candidates, label, side) {
+  site.loadImage = function loadImage(img, candidates, label, side, options) {
     if (!img) {
       return;
     }
 
-    img.loading = "eager";
+    const settings = options || {};
+    const isEager = Boolean(settings.eager);
+    img.loading = isEager ? "eager" : "lazy";
     img.decoding = "async";
+    img.width = 520;
+    img.height = 760;
+
+    try {
+      img.fetchPriority = isEager ? "high" : "low";
+    } catch (error) {
+      // Older browsers can ignore fetchPriority without affecting image loading.
+    }
 
     const sources = Array.isArray(candidates) ? candidates.slice() : [];
     const fallback = site.placeholderPhoneSvg(label, side);
@@ -162,11 +185,20 @@
       return;
     }
 
+    let ticking = false;
     function syncHeaderState() {
       header.classList.toggle("scrolled", window.scrollY > 50);
+      ticking = false;
     }
 
-    window.addEventListener("scroll", syncHeaderState, { passive: true });
+    window.addEventListener("scroll", function () {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      window.requestAnimationFrame(syncHeaderState);
+    }, { passive: true });
+
     syncHeaderState();
   }
 
@@ -175,7 +207,7 @@
       return;
     }
 
-    const targets = document.querySelectorAll("main > .section:not(.hero), .page-hero-card, .contact-page-grid, .story-grid, .payment-grid");
+    const targets = document.querySelectorAll(".page-hero-card, .contact-page-grid, .story-grid, .payment-grid");
     if (!targets.length) {
       return;
     }
@@ -233,6 +265,7 @@
     setupNavbarScroll();
     setupStorefrontPolish();
     setupScrollReveal();
-    ensureChatbotScript();
   });
+
+  window.addEventListener("load", scheduleChatbotScript, { once: true });
 }());
