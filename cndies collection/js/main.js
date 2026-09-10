@@ -19,6 +19,10 @@
     ensureStylesheet('link[data-cndies-apple-enhance]', "css/apple-enhance.css?v=20260910b", "data-cndies-apple-enhance");
   }
 
+  function ensureDeviceHotfixStyles() {
+    ensureStylesheet('link[data-cndies-device-hotfix]', "css/device-hotfix.css?v=20260910c", "data-cndies-device-hotfix");
+  }
+
   function ensureChatbotScript() {
     if (document.querySelector('script[data-cndies-chatbot]')) {
       return;
@@ -33,6 +37,7 @@
 
   ensurePolishStyles();
   ensureAppleEnhanceStyles();
+  ensureDeviceHotfixStyles();
 
   const site = window.CndiesSite = window.CndiesSite || {};
 
@@ -49,8 +54,8 @@
 
   site.phoneAssetCandidates = function phoneAssetCandidates(slug, side) {
     return [
-      "assets/images/phones/" + slug + "/" + side + ".webp",
       "assets/images/phones/" + slug + "/" + side + ".png",
+      "assets/images/phones/" + slug + "/" + side + ".webp",
       "assets/images/phones/" + slug + "/" + side + ".jpg",
       "assets/images/phones/" + slug + "/" + side + ".jpeg"
     ];
@@ -83,9 +88,7 @@
       return;
     }
 
-    if (!img.hasAttribute("loading")) {
-      img.loading = "lazy";
-    }
+    img.loading = "eager";
     img.decoding = "async";
 
     const sources = Array.isArray(candidates) ? candidates.slice() : [];
@@ -193,21 +196,6 @@
     });
   }
 
-  function setupPaymentSafety() {
-    document.querySelectorAll(".info-item").forEach(function (item) {
-      const title = item.querySelector("strong");
-      const detail = item.querySelector("span");
-      if (!title || !detail) {
-        return;
-      }
-
-      if (title.textContent.trim().toLowerCase().indexOf("capitec") !== -1) {
-        title.textContent = "Secure Payment";
-        detail.textContent = "Confirm banking details on WhatsApp before paying";
-      }
-    });
-  }
-
   function setupStorefrontPolish() {
     document.body.classList.add("site-polished", "apple-inspired");
 
@@ -243,7 +231,6 @@
     setupMobileNav();
     setupSmoothAnchors();
     setupNavbarScroll();
-    setupPaymentSafety();
     setupStorefrontPolish();
     setupScrollReveal();
     ensureChatbotScript();
