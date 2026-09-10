@@ -1,38 +1,206 @@
-/* Emergency device-image visibility repair.
-   Keeps catalogue data and prices untouched. */
+/* Mobile performance + colour refresh for CNDIE'S COLLECTION.
+   Catalogue data and prices are intentionally untouched. */
 
-/* Never hide whole content sections behind the reveal animation.
-   The Shop section becomes extremely tall once products render, which can
-   prevent IntersectionObserver from ever reaching its percentage threshold
-   on mobile and leave the entire catalogue at opacity: 0. */
+:root {
+  --bg: #101714;
+  --bg-alt: #151f1a;
+  --bg-deep: #1b2820;
+  --panel: rgba(23, 32, 27, 0.94);
+  --panel-strong: rgba(27, 38, 32, 0.98);
+  --panel-soft: rgba(34, 48, 40, 0.92);
+  --border: rgba(167, 190, 172, 0.22);
+  --border-strong: rgba(167, 190, 172, 0.42);
+  --text: #f7f4ed;
+  --soft: #d7ded7;
+  --muted: #9eaaa0;
+  --accent: #e8875f;
+  --accent-strong: #ffc1a3;
+  --accent-deep: #b95d40;
+  --accent-shadow: rgba(232, 135, 95, 0.22);
+  --shadow: 0 20px 52px rgba(0, 0, 0, 0.28);
+  --system-blue: #8fb59a;
+  --surface-glass: rgba(22, 31, 26, 0.9);
+  --surface-glass-strong: rgba(25, 35, 29, 0.97);
+  --hairline: rgba(181, 202, 185, 0.12);
+  --hairline-strong: rgba(181, 202, 185, 0.24);
+}
+
+body {
+  background:
+    radial-gradient(circle at 85% 8%, rgba(232, 135, 95, 0.11), transparent 28rem),
+    radial-gradient(circle at 10% 42%, rgba(143, 181, 154, 0.08), transparent 25rem),
+    var(--bg);
+}
+
+.background-orb {
+  background: radial-gradient(circle, rgba(143, 181, 154, 0.12), transparent 70%);
+}
+
+.background-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(181, 202, 185, 0.11) 1px, transparent 0);
+}
+
+.glass-panel,
+.glass-card {
+  background: linear-gradient(145deg, rgba(28, 39, 33, 0.95), rgba(17, 25, 21, 0.96));
+  border-color: var(--border);
+}
+
+.site-header {
+  background: rgba(14, 21, 17, 0.9);
+  border-bottom-color: rgba(167, 190, 172, 0.16);
+}
+
+.site-header.scrolled {
+  border-bottom-color: rgba(232, 135, 95, 0.24);
+}
+
+.brand-mark,
+.social-link {
+  border-color: rgba(167, 190, 172, 0.24);
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.eyebrow,
+.featured-tag,
+.product-price strong {
+  color: var(--accent-strong);
+}
+
+.eyebrow,
+.featured-tag {
+  border-color: rgba(232, 135, 95, 0.3);
+  background: rgba(232, 135, 95, 0.09);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffc1a3 0%, #e8875f 100%);
+  color: #23130d;
+  box-shadow: 0 9px 24px rgba(232, 135, 95, 0.2);
+}
+
+.btn-primary:hover {
+  color: #1a0d09;
+  box-shadow: 0 12px 30px rgba(232, 135, 95, 0.27);
+}
+
+.btn-secondary,
+.search-box input,
+.filters-bar select {
+  border-color: rgba(167, 190, 172, 0.24);
+  background: rgba(10, 17, 13, 0.72);
+}
+
+.search-box input:focus,
+.filters-bar select:focus {
+  border-color: rgba(232, 135, 95, 0.58);
+  box-shadow: 0 0 0 3px rgba(232, 135, 95, 0.11);
+}
+
+.condition-buttons {
+  border-color: rgba(167, 190, 172, 0.12);
+  background: rgba(143, 181, 154, 0.05);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: rgba(232, 135, 95, 0.15);
+  color: var(--accent-strong);
+  border-color: rgba(232, 135, 95, 0.38);
+}
+
+.product-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: linear-gradient(180deg, rgba(27, 38, 32, 0.99), rgba(16, 23, 19, 0.99));
+  border-color: rgba(167, 190, 172, 0.14);
+}
+
+.product-media::before {
+  background: radial-gradient(circle at 50% 12%, #fff 0%, #f2f1ec 47%, #dfe3dc 100%);
+}
+
+.product-badge {
+  border-color: rgba(167, 190, 172, 0.2);
+  background: rgba(16, 23, 19, 0.9);
+}
+
+.product-badge.is-brand-new {
+  color: #ffd0b8;
+  border-color: rgba(232, 135, 95, 0.42);
+  background: rgba(88, 43, 29, 0.9);
+}
+
+.product-badge.is-pre-owned {
+  color: #d4ead8;
+  border-color: rgba(143, 181, 154, 0.38);
+  background: rgba(27, 64, 39, 0.9);
+}
+
+.trust-card,
+.contact-card,
+.connect-panel,
+.shop-section,
+.contact-preview,
+.site-footer {
+  border-color: rgba(167, 190, 172, 0.14);
+}
+
+.site-footer {
+  background: #0c120f;
+}
+
+/* Never hide a whole content section behind a reveal animation. */
 main > .section.reveal-ready {
   opacity: 1 !important;
   transform: none !important;
 }
 
-.product-card {
-  content-visibility: visible !important;
-  contain: none !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
 .product-image-shell,
-.product-image-frame {
+.product-image-frame,
+.product-image {
   visibility: visible !important;
 }
 
 .product-image {
   display: block !important;
-  visibility: visible !important;
 }
 
 .product-image--front {
   opacity: 1;
 }
 
-/* Preserve the existing front/back hover interaction on pointer devices. */
+.load-more-products {
+  display: block;
+  width: min(100%, 25rem);
+  min-height: 3.2rem;
+  margin: 1.2rem auto 0;
+  padding: .85rem 1.2rem;
+  border: 1px solid rgba(232, 135, 95, 0.36);
+  border-radius: 999px;
+  background: rgba(232, 135, 95, 0.11);
+  color: var(--accent-strong);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.load-more-products:hover,
+.load-more-products:focus-visible {
+  background: rgba(232, 135, 95, 0.18);
+}
+
+.load-more-products[hidden] {
+  display: none !important;
+}
+
 @media (hover: hover) and (pointer: fine) {
+  .product-card {
+    content-visibility: auto !important;
+    contain-intrinsic-size: 620px;
+  }
+
   .product-card:hover .product-image--front {
     opacity: 0;
   }
@@ -42,8 +210,117 @@ main > .section.reveal-ready {
   }
 }
 
-/* On touch devices, keep the front device view visible and reliable. */
-@media (hover: none), (pointer: coarse) {
+@media (max-width: 720px) {
+  body {
+    background: linear-gradient(180deg, #101714 0%, #131c17 48%, #0d1410 100%);
+  }
+
+  .background-orb,
+  .background-grid {
+    display: none !important;
+  }
+
+  .site-header,
+  .glass-panel,
+  .glass-card,
+  .page-hero-card,
+  .payment-card,
+  .cta-panel,
+  .connect-panel,
+  .connect-panel-wide,
+  .contact-page-card,
+  .story-card,
+  .cndies-chat-launcher,
+  .cndies-chat-shell {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .site-header {
+    background: rgba(14, 21, 17, 0.98);
+  }
+
+  .glass-panel,
+  .glass-card {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 2.5rem;
+    padding-bottom: 2.8rem;
+  }
+
+  .hero-grid {
+    gap: 1.6rem;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(3rem, 14vw, 4.35rem);
+    line-height: .94;
+  }
+
+  .hero-copy .lead {
+    line-height: 1.62;
+  }
+
+  .featured-showcase-art {
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0,0,0,.22) !important;
+    transition: none !important;
+  }
+
+  .featured-showcase-art img {
+    transform: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+
+  .filters-bar {
+    gap: .75rem;
+    padding: .75rem;
+    margin-bottom: 1rem;
+    box-shadow: none;
+  }
+
+  .products-grid {
+    gap: .85rem;
+  }
+
+  .product-card {
+    content-visibility: visible !important;
+    contain: none !important;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18) !important;
+    transform: none !important;
+  }
+
+  .product-media {
+    padding: .65rem;
+  }
+
+  .product-media::before {
+    inset: .65rem;
+    border-radius: 15px;
+    box-shadow: none !important;
+  }
+
+  .product-image-shell {
+    height: 15.5rem !important;
+    margin-top: .35rem;
+  }
+
+  .product-image {
+    filter: none !important;
+    transition: none !important;
+  }
+
   .product-image--front {
     opacity: 1 !important;
     transform: none !important;
@@ -51,5 +328,45 @@ main > .section.reveal-ready {
 
   .product-image--back {
     opacity: 0 !important;
+  }
+
+  .product-body {
+    min-height: auto !important;
+    gap: .7rem;
+    padding: 1rem;
+  }
+
+  .product-body h3 {
+    font-size: 1.55rem;
+  }
+
+  .info-item,
+  .trust-card,
+  .contact-card,
+  .btn,
+  .filter-btn,
+  .social-link {
+    transition: none !important;
+  }
+
+  .cndies-chat-shell {
+    background: #17201b;
+    box-shadow: 0 18px 46px rgba(0,0,0,.42);
+  }
+
+  .cndies-chat-launcher {
+    background: #f7f4ed;
+    color: #17201b;
+    box-shadow: 0 10px 24px rgba(0,0,0,.24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .product-image,
+  .featured-showcase-art,
+  .featured-showcase-art img {
+    transition: none !important;
+    transform: none !important;
   }
 }
