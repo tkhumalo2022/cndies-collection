@@ -1,0 +1,44 @@
+/* Emergency device-image visibility repair.
+   Keeps catalogue data and prices untouched. */
+
+.product-card {
+  content-visibility: visible !important;
+  contain: none !important;
+}
+
+.product-image-shell,
+.product-image-frame {
+  visibility: visible !important;
+}
+
+.product-image {
+  display: block !important;
+  visibility: visible !important;
+}
+
+.product-image--front {
+  opacity: 1;
+}
+
+/* Preserve the existing front/back hover interaction on pointer devices. */
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .product-image--front {
+    opacity: 0;
+  }
+
+  .product-card:hover .product-image--back {
+    opacity: 1;
+  }
+}
+
+/* On touch devices, keep the front device view visible and reliable. */
+@media (hover: none), (pointer: coarse) {
+  .product-image--front {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .product-image--back {
+    opacity: 0 !important;
+  }
+}
