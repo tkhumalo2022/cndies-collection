@@ -1,9 +1,20 @@
 /* Emergency device-image visibility repair.
    Keeps catalogue data and prices untouched. */
 
+/* Never hide whole content sections behind the reveal animation.
+   The Shop section becomes extremely tall once products render, which can
+   prevent IntersectionObserver from ever reaching its percentage threshold
+   on mobile and leave the entire catalogue at opacity: 0. */
+main > .section.reveal-ready {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 .product-card {
   content-visibility: visible !important;
   contain: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .product-image-shell,
