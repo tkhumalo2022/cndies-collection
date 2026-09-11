@@ -258,9 +258,39 @@
     document.head.appendChild(style);
   }
 
+  function bindCopyAccountButton(section) {
+    if (!section) {
+      return;
+    }
+
+    const copyButton = section.querySelector(".eft-copy-button");
+    if (!copyButton || copyButton.dataset.copyBound === "true") {
+      return;
+    }
+
+    copyButton.dataset.copyBound = "true";
+    copyButton.addEventListener("click", function () {
+      const accountNumber = copyButton.getAttribute("data-account-number") || "2115946185";
+      if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        window.prompt("Copy the Capitec account number:", accountNumber);
+        return;
+      }
+
+      navigator.clipboard.writeText(accountNumber).then(function () {
+        const originalLabel = copyButton.textContent;
+        copyButton.textContent = "Account number copied";
+        window.setTimeout(function () {
+          copyButton.textContent = originalLabel;
+        }, 1800);
+      }).catch(function () {
+        window.prompt("Copy the Capitec account number:", accountNumber);
+      });
+    });
+  }
+
   function setupPaymentSection() {
     const infoBar = document.querySelector(".info-bar");
-    if (!infoBar || document.querySelector(".eft-payment-section")) {
+    if (!infoBar) {
       return;
     }
 
@@ -269,7 +299,7 @@
     const infoItems = infoBar.querySelectorAll(".info-item");
     infoItems.forEach(function (item) {
       const heading = item.querySelector("strong");
-      if (!heading || heading.textContent.trim() !== "Capitec Bank") {
+      if (!heading || (heading.textContent.trim() !== "Capitec Bank" && heading.textContent.trim() !== "Pay via EFT")) {
         return;
       }
       heading.textContent = "Pay via EFT";
@@ -279,60 +309,44 @@
       }
     });
 
-    const confirmMessage = "Hi Cndie's Collection, I want to confirm the iPhone and total before making an EFT payment.";
-    const proofMessage = "Hi Cndie's Collection, I have made my EFT payment and would like to send my proof of payment.";
+    let section = document.querySelector(".eft-payment-section");
+    if (!section) {
+      const confirmMessage = "Hi Cndie's Collection, I want to confirm the iPhone and final total before making an EFT payment.";
+      const proofMessage = "Hi Cndie's Collection, I have made my EFT payment and would like to send my proof of payment.";
 
-    const section = document.createElement("section");
-    section.className = "section eft-payment-section";
-    section.id = "payment";
-    section.setAttribute("aria-labelledby", "eftPaymentTitle");
-    section.innerHTML = [
-      '<div class="container">',
-      '<div class="eft-payment-card">',
-      '<div class="eft-payment-copy">',
-      '<span class="eyebrow">Pay via EFT</span>',
-      '<h2 id="eftPaymentTitle">Capitec payment details</h2>',
-      '<p>Prefer an EFT? The payment details are kept visible so you can pay easily after confirming your iPhone and total with us on WhatsApp.</p>',
-      '</div>',
-      '<div class="eft-payment-details">',
-      '<dl class="eft-details">',
-      '<div class="eft-detail-row"><dt>Bank</dt><dd>Capitec Bank</dd></div>',
-      '<div class="eft-detail-row"><dt>Account number</dt><dd class="eft-account-number">2115946185</dd></div>',
-      '<div class="eft-detail-row"><dt>Payment reference</dt><dd>Full name + iPhone model</dd></div>',
-      '</dl>',
-      '<div class="eft-payment-note"><strong>Before you pay:</strong> confirm the phone, final amount and availability on WhatsApp. After payment, send your proof of payment so the order and delivery can be confirmed.</div>',
-      '<div class="eft-payment-actions">',
-      '<a class="btn btn-primary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(confirmMessage) + '" target="_blank" rel="noopener noreferrer">Confirm before paying</a>',
-      '<a class="btn btn-secondary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(proofMessage) + '" target="_blank" rel="noopener noreferrer">Send proof on WhatsApp</a>',
-      '<button class="eft-copy-button" type="button" data-account-number="2115946185">Copy account number</button>',
-      '</div>',
-      '</div>',
-      '</div>',
-      '</div>'
-    ].join("");
+      section = document.createElement("section");
+      section.className = "section eft-payment-section";
+      section.id = "payment";
+      section.setAttribute("aria-labelledby", "eftPaymentTitle");
+      section.innerHTML = [
+        '<div class="container">',
+        '<div class="eft-payment-card">',
+        '<div class="eft-payment-copy">',
+        '<span class="eyebrow">Pay via EFT</span>',
+        '<h2 id="eftPaymentTitle">Capitec payment details</h2>',
+        '<p>The account is published here so it is easy to find. Please confirm your iPhone, final price and availability with us on WhatsApp before sending payment.</p>',
+        '</div>',
+        '<div class="eft-payment-details">',
+        '<dl class="eft-details">',
+        '<div class="eft-detail-row"><dt>Bank</dt><dd>Capitec Bank</dd></div>',
+        '<div class="eft-detail-row"><dt>Account number</dt><dd class="eft-account-number">2115946185</dd></div>',
+        '<div class="eft-detail-row"><dt>Payment reference</dt><dd>Full name + iPhone model</dd></div>',
+        '</dl>',
+        '<div class="eft-payment-note"><strong>After paying:</strong> send your proof of payment on WhatsApp so the order and delivery can be confirmed.</div>',
+        '<div class="eft-payment-actions">',
+        '<a class="btn btn-primary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(confirmMessage) + '" target="_blank" rel="noopener noreferrer">Confirm on WhatsApp</a>',
+        '<a class="btn btn-secondary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(proofMessage) + '" target="_blank" rel="noopener noreferrer">Send proof</a>',
+        '<button class="eft-copy-button" type="button" data-account-number="2115946185">Copy account number</button>',
+        '</div>',
+        '</div>',
+        '</div>',
+        '</div>'
+      ].join("");
 
-    infoBar.insertAdjacentElement("afterend", section);
-
-    const copyButton = section.querySelector(".eft-copy-button");
-    if (copyButton) {
-      copyButton.addEventListener("click", function () {
-        const accountNumber = copyButton.getAttribute("data-account-number") || "2115946185";
-        if (!navigator.clipboard || !navigator.clipboard.writeText) {
-          window.prompt("Copy the Capitec account number:", accountNumber);
-          return;
-        }
-
-        navigator.clipboard.writeText(accountNumber).then(function () {
-          const originalLabel = copyButton.textContent;
-          copyButton.textContent = "Account number copied";
-          window.setTimeout(function () {
-            copyButton.textContent = originalLabel;
-          }, 1800);
-        }).catch(function () {
-          window.prompt("Copy the Capitec account number:", accountNumber);
-        });
-      });
+      infoBar.insertAdjacentElement("afterend", section);
     }
+
+    bindCopyAccountButton(section);
   }
 
   function setupStorefrontPolish() {
