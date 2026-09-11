@@ -207,7 +207,7 @@
       return;
     }
 
-    const targets = document.querySelectorAll(".page-hero-card, .contact-page-grid, .story-grid, .payment-grid");
+    const targets = document.querySelectorAll(".page-hero-card, .contact-page-grid, .story-grid, .payment-grid, .eft-payment-card");
     if (!targets.length) {
       return;
     }
@@ -226,6 +226,113 @@
       target.classList.add("reveal-ready");
       observer.observe(target);
     });
+  }
+
+  function ensurePaymentSectionStyles() {
+    if (document.getElementById("cndies-eft-payment-styles")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "cndies-eft-payment-styles";
+    style.textContent = [
+      ".eft-payment-section{padding-top:0;}",
+      ".eft-payment-card{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:clamp(1.5rem,4vw,4rem);padding:clamp(1.5rem,4vw,3rem);background:linear-gradient(145deg,rgba(25,24,22,.96),rgba(12,12,13,.98));border:1px solid var(--border-strong);border-radius:var(--radius);box-shadow:var(--shadow);}",
+      ".eft-payment-card:before{content:'';position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent-deep));}",
+      ".eft-payment-copy{align-self:center;max-width:42rem;}",
+      ".eft-payment-copy h2{margin:.45rem 0 .75rem;font-size:clamp(2rem,4vw,3.5rem);line-height:1;}",
+      ".eft-payment-copy p{margin:0;color:var(--soft);font-size:1rem;line-height:1.75;}",
+      ".eft-payment-copy .eyebrow{display:inline-flex;margin-bottom:.2rem;}",
+      ".eft-details{display:grid;gap:.8rem;margin:0;}",
+      ".eft-detail-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.05rem;border:1px solid var(--border);border-radius:var(--radius-md);background:rgba(255,255,255,.025);}",
+      ".eft-detail-row dt{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;}",
+      ".eft-detail-row dd{margin:0;color:var(--text);font-weight:700;text-align:right;}",
+      ".eft-account-number{font-size:clamp(1.25rem,3vw,1.7rem);letter-spacing:.055em;}",
+      ".eft-payment-note{margin-top:1rem;padding:1rem 1.05rem;border-radius:var(--radius-md);background:rgba(217,183,110,.08);border:1px solid rgba(217,183,110,.2);color:var(--soft);font-size:.9rem;line-height:1.6;}",
+      ".eft-payment-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem;}",
+      ".eft-copy-button{appearance:none;background:transparent;color:var(--text);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:.9rem 1rem;font:inherit;font-weight:600;cursor:pointer;transition:border-color .2s ease,background .2s ease;}",
+      ".eft-copy-button:hover{background:rgba(255,255,255,.04);border-color:var(--accent);}",
+      ".eft-copy-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}",
+      "@media (max-width:820px){.eft-payment-card{grid-template-columns:1fr;}.eft-detail-row{align-items:flex-start;flex-direction:column;}.eft-detail-row dd{text-align:left;}.eft-payment-actions{flex-direction:column;}.eft-payment-actions .btn,.eft-copy-button{width:100%;}.eft-account-number{font-size:1.35rem;}}"
+    ].join("");
+    document.head.appendChild(style);
+  }
+
+  function setupPaymentSection() {
+    const infoBar = document.querySelector(".info-bar");
+    if (!infoBar || document.querySelector(".eft-payment-section")) {
+      return;
+    }
+
+    ensurePaymentSectionStyles();
+
+    const infoItems = infoBar.querySelectorAll(".info-item");
+    infoItems.forEach(function (item) {
+      const heading = item.querySelector("strong");
+      if (!heading || heading.textContent.trim() !== "Capitec Bank") {
+        return;
+      }
+      heading.textContent = "Pay via EFT";
+      const detail = item.querySelector("span");
+      if (detail) {
+        detail.textContent = "Capitec • 2115946185";
+      }
+    });
+
+    const confirmMessage = "Hi Cndie's Collection, I want to confirm the iPhone and total before making an EFT payment.";
+    const proofMessage = "Hi Cndie's Collection, I have made my EFT payment and would like to send my proof of payment.";
+
+    const section = document.createElement("section");
+    section.className = "section eft-payment-section";
+    section.id = "payment";
+    section.setAttribute("aria-labelledby", "eftPaymentTitle");
+    section.innerHTML = [
+      '<div class="container">',
+      '<div class="eft-payment-card">',
+      '<div class="eft-payment-copy">',
+      '<span class="eyebrow">Pay via EFT</span>',
+      '<h2 id="eftPaymentTitle">Capitec payment details</h2>',
+      '<p>Prefer an EFT? The payment details are kept visible so you can pay easily after confirming your iPhone and total with us on WhatsApp.</p>',
+      '</div>',
+      '<div class="eft-payment-details">',
+      '<dl class="eft-details">',
+      '<div class="eft-detail-row"><dt>Bank</dt><dd>Capitec Bank</dd></div>',
+      '<div class="eft-detail-row"><dt>Account number</dt><dd class="eft-account-number">2115946185</dd></div>',
+      '<div class="eft-detail-row"><dt>Payment reference</dt><dd>Full name + iPhone model</dd></div>',
+      '</dl>',
+      '<div class="eft-payment-note"><strong>Before you pay:</strong> confirm the phone, final amount and availability on WhatsApp. After payment, send your proof of payment so the order and delivery can be confirmed.</div>',
+      '<div class="eft-payment-actions">',
+      '<a class="btn btn-primary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(confirmMessage) + '" target="_blank" rel="noopener noreferrer">Confirm before paying</a>',
+      '<a class="btn btn-secondary" href="https://wa.me/' + site.whatsAppNumber + '?text=' + encodeURIComponent(proofMessage) + '" target="_blank" rel="noopener noreferrer">Send proof on WhatsApp</a>',
+      '<button class="eft-copy-button" type="button" data-account-number="2115946185">Copy account number</button>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</div>'
+    ].join("");
+
+    infoBar.insertAdjacentElement("afterend", section);
+
+    const copyButton = section.querySelector(".eft-copy-button");
+    if (copyButton) {
+      copyButton.addEventListener("click", function () {
+        const accountNumber = copyButton.getAttribute("data-account-number") || "2115946185";
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          window.prompt("Copy the Capitec account number:", accountNumber);
+          return;
+        }
+
+        navigator.clipboard.writeText(accountNumber).then(function () {
+          const originalLabel = copyButton.textContent;
+          copyButton.textContent = "Account number copied";
+          window.setTimeout(function () {
+            copyButton.textContent = originalLabel;
+          }, 1800);
+        }).catch(function () {
+          window.prompt("Copy the Capitec account number:", accountNumber);
+        });
+      });
+    }
   }
 
   function setupStorefrontPolish() {
@@ -264,6 +371,7 @@
     setupSmoothAnchors();
     setupNavbarScroll();
     setupStorefrontPolish();
+    setupPaymentSection();
     setupScrollReveal();
   });
 
