@@ -20,7 +20,7 @@
   }
 
   function ensureDeviceHotfixStyles() {
-    ensureStylesheet('link[data-cndies-device-hotfix]', "css/device-hotfix.css?v=20260910e", "data-cndies-device-hotfix");
+    ensureStylesheet('link[data-cndies-device-hotfix]', "css/device-hotfix.css?v=20260911b", "data-cndies-device-hotfix");
   }
 
   function ensureChatbotScript() {
